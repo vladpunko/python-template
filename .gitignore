@@ -1,11 +1,13 @@
 *.egg
 *.egg-info
+*.html
 *.log
 *.py[cod]
 *.xml
 .*
 
 __pycache__/
+assets/
 build/
 dist/
 docs/_build

@@ -8,6 +8,7 @@ import collections
 import collections.abc
 import typing
 
+import numpy as np
 import torch
 from loguru import logger
 
@@ -33,6 +34,14 @@ def reduce(sequence: typing.Iterable[int]) -> int:
         If the input is not an iterable.
     ValueError
         If any element in the sequence is not an integer.
+
+    Examples
+    --------
+    >>> reduce((1, 2, 3))
+    6
+
+    >>> reduce(range(5))
+    10
     """
     logger.debug(repr(locals()))
 
@@ -43,4 +52,4 @@ def reduce(sequence: typing.Iterable[int]) -> int:
     if not all(isinstance(x, int) for x in sequence):
         raise ValueError("All elements in the sequence must be integers.")
 
-    return torch.sum(torch.as_tensor(sequence), dtype=torch.int32).item()
+    return torch.sum(torch.as_tensor(np.asarray(sequence)), dtype=torch.int32).item()

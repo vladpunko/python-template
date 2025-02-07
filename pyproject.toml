@@ -1,0 +1,163 @@
+[build-system]
+requires = ["poetry-core>=2.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.requires-plugins]
+poetry-plugin-export = ">=1.9"
+
+[tool.poetry]
+package-mode = true
+name = "python_template"
+version = "0.0.0"
+description = "python_template"
+license = "MIT"
+authors = ["Vladislav Punko <iam.vlad.punko@gmail.com>"]
+maintainers = []
+readme = "README.md"
+repository = "https://github.com/vladpunko/python_template.git"
+keywords = []
+classifiers = []  # see information: https://pypi.org/classifiers
+packages = [
+  {include = "python_template", from = "src"}
+]
+include = ["CHANGELOG.md", "LICENSE", "README.md"]
+
+[tool.poetry.dependencies]
+python = ">=3.10,<3.13"
+# ---
+loguru = "^0.7"
+numpy = "^2.2"
+torch = [
+  {version = "~2.5", platform = "darwin", source = "pypi"},
+  # --
+  {version = "~2.5+cu118", platform = "linux", source = "pytorch"},
+]
+
+[tool.poetry.group.docs]
+optional = true
+
+[tool.poetry.group.docs.dependencies]
+numpydoc = "^1.8"
+sphinx = "^8.1"
+sphinx_rtd_theme = "^3.0"
+
+[tool.poetry.group.dev]
+optional = true
+
+[tool.poetry.group.dev.dependencies]
+bandit = "^1.8"
+black = "^25.1"
+deptry = "^0.23"
+isort = "^6.0"
+jupyter = "^1.1"
+mypy = "^1.14"
+pre-commit = "^4.1"
+ruff = "^0.9"
+twine = "^6.1"
+
+[tool.poetry.group.tests]
+optional = true
+
+[tool.poetry.group.tests.dependencies]
+coverage = "^7.6"
+pyfakefs = "^5.7"
+pytest = "^8.3"
+pytest-cov = "^6.0"
+pytest-html = "^4.1"
+pytest-mock = "^3.14"
+tox = "^4.24"
+
+[[tool.poetry.source]]
+name = "pytorch"
+priority = "supplemental"
+url = "https://download.pytorch.org/whl/cu118"
+
+[tool.pytest.ini_options]
+addopts = [
+  "-vv",
+  "-x",  # exit instantly on first error or failed test
+  # ---
+  "--cov-report=html",
+  "--cov-report=term",
+  "--cov",
+  "--doctest-modules",
+  "--durations=10",
+  "--failed-first",
+  "--import-mode=importlib",
+  "--new-first",
+  # ---
+  "--html=./.pytest_report/index.html",
+]
+testpaths = ["src/python_template", "tests"]
+
+[tool.coverage.run]
+branch = true
+omit = [
+  "src/python_template/__about__.py",
+]
+parallel = true
+source = ["src/python_template"]
+
+[tool.coverage.report]
+exclude_lines = [
+  "@abc.abstractmethod",
+
+  # We have to re-enable the standard pragma.
+  "pragma: no cover",
+
+  # Do not complain about missing debug-only code.
+  "def __repr__",
+  "if self.debug:",
+
+  # No need to complain if tests do not hit defensive assertion code.
+  "pass",
+  "raise AssertionError",
+  "raise NotImplementedError",
+  "return NotImplemented",
+
+  # Do not complain if non-runnable code is not run.
+  "if __name__ == .__main__.:",
+  "if 0:",
+  "if False:",
+]
+show_missing = true
+
+[tool.black]
+target-version = ["py310", "py311", "py312"]
+
+[tool.bandit]
+exclude_dirs = [
+  "docs/",
+  "tests/",
+]
+
+[tool.deptry]
+extend_exclude = [
+  "^docs/",
+  "^examples/",
+  "^tests/",
+]
+
+[tool.isort]
+profile = "black"
+known_first_party = []
+known_local_folder = ["python_template"]
+
+[tool.mypy]
+disallow_untyped_defs = true
+exclude = [
+  ".pyi$",
+  "^docs/",
+  "^examples/",
+  "^tests/",
+]
+ignore_missing_imports = true
+strict_optional = true
+
+[tool.ruff]
+exclude = ["*.pyi"]
+line-length = 100
+select = ["A", "B", "C", "E", "F", "N", "W"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
