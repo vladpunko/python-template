@@ -28,9 +28,9 @@ python = ">=3.10,<3.13"
 loguru = "^0.7"
 numpy = "^2.2"
 torch = [
-  {version = "~2.5", platform = "darwin", source = "pypi"},
+  {version = "~2.6", platform = "darwin", source = "pypi"},
   # --
-  {version = "~2.5+cu118", platform = "linux", source = "pytorch"},
+  {version = "~2.6", platform = "linux", source = "pytorch"},
 ]
 
 [tool.poetry.group.docs]
@@ -69,8 +69,8 @@ tox = "^4.24"
 
 [[tool.poetry.source]]
 name = "pytorch"
-priority = "supplemental"
-url = "https://download.pytorch.org/whl/cu118"
+priority = "explicit"
+url = "https://download.pytorch.org/whl/cu126"
 
 [tool.pytest.ini_options]
 addopts = [
