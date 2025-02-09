@@ -32,6 +32,11 @@ repos:
         additional_dependencies: ["bandit[toml]"]
         args: ["-c", "pyproject.toml"]
 
+  - repo: https://github.com/pycqa/flake8
+    rev: cf1542cefa3e766670b2066dd75c4571d682a649
+    hooks:
+      - id: flake8
+
   # Use the static code checker to find and fix logical errors in python source code.
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: 871f3bcae4fe473cd7109c3a068db975dc035e3b

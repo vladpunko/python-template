@@ -171,7 +171,7 @@ strict_optional = true
 
 [tool.ruff]
 exclude = ["*.pyi"]
-line-length = 100
+line-length = 88
 select = ["A", "B", "C", "E", "F", "N", "W"]
 
 [tool.ruff.lint.pydocstyle]
