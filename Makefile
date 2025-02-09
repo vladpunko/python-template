@@ -28,7 +28,7 @@ lock:
 
 bootstrap: poetry.lock poetry.toml pyproject.toml
 	@poetry check
-	@poetry install -vv --compile --no-cache --with dev --with docs --with tests
+	@poetry install -vv --compile --extras cpu --no-cache --with dev --with docs --with tests
 
 build: bootstrap
 	@poetry build --clean

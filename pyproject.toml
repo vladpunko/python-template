@@ -21,7 +21,15 @@ keywords = []
 dependencies = [  # see information: https://python-poetry.org/docs/dependency-specification
   "loguru (>=0.7,<1.0)",
   "numpy (>=2.2,<3.0)",
-  "torch (>=2.6,<2.7)",
+]
+
+[project.optional-dependencies]
+cpu = [
+  "torch (>=2.6,<2.7) ; sys_platform == 'darwin'",
+  "torch (>=2.6+cpu,<2.7+cpu) ; sys_platform == 'linux'",
+]
+cuda = [
+  "torch (>=2.6+cu126,<2.7+cu126) ; sys_platform == 'linux'",
 ]
 
 [project.urls]
@@ -39,8 +47,10 @@ include = ["CHANGELOG.md", "LICENSE", "README.md"]
 python = ">=3.10,<3.13"
 # ---
 torch = [
+  {markers = "extra == 'cpu' and extra != 'cuda'", platform = "linux", source = "pytorch_cpu"},
+  {markers = "extra == 'cuda' and extra != 'cpu'", platform = "linux", source = "pytorch_cuda"},
+  # ---
   {platform = "darwin", source = "pypi_public"},
-  {platform = "linux", source = "pytorch"},
 ]
 
 [tool.poetry.group.docs]
@@ -84,7 +94,12 @@ priority = "primary"
 url = "https://pypi.org/simple/"
 
 [[tool.poetry.source]]
-name = "pytorch"
+name = "pytorch_cpu"
+priority = "explicit"
+url = "https://download.pytorch.org/whl/cpu"
+
+[[tool.poetry.source]]
+name = "pytorch_cuda"
 priority = "explicit"
 url = "https://download.pytorch.org/whl/cu126"
 
