@@ -2,6 +2,7 @@
 *.egg-info
 *.html
 *.log
+*.prof
 *.py[cod]
 *.xml
 .*

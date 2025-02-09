@@ -19,6 +19,7 @@ help:
 	@echo 'lint         - inspect project source code for problems and errors'
 	@echo 'stubs        - create files that include only type hints for the public interface of modules'
 	@echo 'jupyter      - run jupyter server'
+	@echo 'analysis     - run the python script with performance analysis'
 	@echo 'clean        - clean up project environment and all the build artifacts'
 
 .PHONY: lock
@@ -59,6 +60,10 @@ stubs: bootstrap
 
 jupyter: bootstrap
 	@poetry run jupyter notebook --log-level INFO --ServerApp.notebook_dir $(PWD)
+
+analysis: bootstrap
+	@poetry run python -m cProfile -o analysis.prof $(or $(PROFILE_SCRIPT), main.py)
+	@poetry run snakeviz analysis.prof
 
 .PHONY: clean
 clean:
