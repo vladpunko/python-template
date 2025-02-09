@@ -5,18 +5,31 @@ build-backend = "poetry.core.masonry.api"
 [tool.poetry.requires-plugins]
 poetry-plugin-export = ">=1.9"
 
-[tool.poetry]
-package-mode = true
+[project]
 name = "python_template"
 version = "0.0.0"
 description = "python_template"
-license = "MIT"
-authors = ["Vladislav Punko <iam.vlad.punko@gmail.com>"]
-maintainers = []
+license = {text = "MIT"}
 readme = "README.md"
-repository = "https://github.com/vladpunko/python_template.git"
-keywords = []
+requires-python = ">=3.10"
+authors = [
+  {name = "Vladislav Punko", email = "iam.vlad.punko@gmail.com"},
+]
+maintainers = []
 classifiers = []  # see information: https://pypi.org/classifiers
+keywords = []
+dependencies = [  # see information: https://python-poetry.org/docs/dependency-specification
+  "loguru (>=0.7,<1.0)",
+  "numpy (>=2.2,<3.0)",
+  "torch (>=2.6,<2.7)",
+]
+
+[project.urls]
+"Issue tracker" = "https://github.com/vladpunko/python_template/issues"
+"Source code" = "https://github.com/vladpunko/python_template"
+
+[tool.poetry]
+package-mode = true
 packages = [
   {include = "python_template", from = "src"}
 ]
@@ -25,12 +38,9 @@ include = ["CHANGELOG.md", "LICENSE", "README.md"]
 [tool.poetry.dependencies]
 python = ">=3.10,<3.13"
 # ---
-loguru = "^0.7"
-numpy = "^2.2"
 torch = [
-  {version = "~2.6", platform = "darwin", source = "pypi"},
-  # --
-  {version = "~2.6", platform = "linux", source = "pytorch"},
+  {platform = "darwin", source = "pypi_public"},
+  {platform = "linux", source = "pytorch"},
 ]
 
 [tool.poetry.group.docs]
@@ -66,6 +76,11 @@ pytest-cov = "^6.0"
 pytest-html = "^4.1"
 pytest-mock = "^3.14"
 tox = "^4.24"
+
+[[tool.poetry.source]]
+name = "pypi_public"
+priority = "primary"
+url = "https://pypi.org/simple/"
 
 [[tool.poetry.source]]
 name = "pytorch"
