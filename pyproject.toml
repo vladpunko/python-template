@@ -75,6 +75,7 @@ pytest = "^8.3"
 pytest-cov = "^6.0"
 pytest-html = "^4.1"
 pytest-mock = "^3.14"
+snakeviz = "^2.2"
 tox = "^4.24"
 
 [[tool.poetry.source]]
