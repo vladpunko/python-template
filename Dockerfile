@@ -16,7 +16,7 @@ ENV POETRY_CACHE_DIR=/tmp/poetry \
 
 COPY poetry.lock pyproject.toml /build/
 
-RUN poetry export > requirements.txt && rm --recursive --force -- "${POETRY_CACHE_DIR}"
+RUN poetry export --extras cuda > requirements.txt && rm --recursive --force -- "${POETRY_CACHE_DIR}"
 
 # Step -- 2.
 FROM nvidia/cuda:12.6.3-cudnn-devel-ubuntu22.04 AS runtime
