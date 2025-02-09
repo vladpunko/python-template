@@ -8,7 +8,7 @@
 
 ## Installation
 
-It is recommended to use this package together with [virtualenv](https://github.com/pypa/virtualenv) and [virtualenvwrapper](https://bitbucket.org/virtualenvwrapper/virtualenvwrapper) to work with python virtual environments more suitable. Make sure the installed [python](https://wiki.archlinux.org/title/python) interpreters work without errors on the current operating system. To install this package you are to use the [pip](https://pip.pypa.io/en/stable) package manager by running the following command:
+It is recommended to use this package together with [virtualenv](https://github.com/pypa/virtualenv) and [virtualenvwrapper](https://github.com/python-virtualenvwrapper/virtualenvwrapper) to work with python virtual environments more suitable. Make sure the installed [python](https://wiki.archlinux.org/title/python) interpreters work without errors on the current operating system. To install this package you are to use the [pip](https://pip.pypa.io/en/stable) package manager by running the following command:
 
 ```bash
 python3 -m pip install {{PROJECT_NAME}}
