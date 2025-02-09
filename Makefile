@@ -18,6 +18,7 @@ help:
 	@echo 'docs         - generate the project documentation'
 	@echo 'lint         - inspect project source code for problems and errors'
 	@echo 'stubs        - create files that include only type hints for the public interface of modules'
+	@echo 'jupyter      - run jupyter server'
 	@echo 'clean        - clean up project environment and all the build artifacts'
 
 .PHONY: lock
@@ -55,6 +56,9 @@ lint: bootstrap
 
 stubs: bootstrap
 	@poetry run stubgen --output .stubs -- src
+
+jupyter: bootstrap
+	@poetry run jupyter notebook --log-level INFO --ServerApp.notebook_dir $(PWD)
 
 .PHONY: clean
 clean:
