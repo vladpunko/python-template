@@ -33,13 +33,13 @@ cuda = [
 ]
 
 [project.urls]
-"Issue tracker" = "https://github.com/vladpunko/python_template/issues"
-"Source code" = "https://github.com/vladpunko/python_template"
+"Issue tracker" = "https://github.com/vladpunko/python-template/issues"
+"Source code" = "https://github.com/vladpunko/python-template"
 
 [tool.poetry]
 package-mode = true
 packages = [
-  {include = "python_template", from = "src"}
+  {include = "python_template", from = "src"},
 ]
 include = ["CHANGELOG.md", "LICENSE", "README.md"]
 
