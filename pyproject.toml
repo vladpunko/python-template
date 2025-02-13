@@ -183,6 +183,7 @@ exclude = [
   "^tests/",
 ]
 ignore_missing_imports = true
+plugins = "pydantic.mypy"
 strict_optional = true
 
 [tool.ruff]
