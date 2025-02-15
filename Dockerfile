@@ -4,8 +4,8 @@ FROM python:3.10-slim-bookworm AS builder
 WORKDIR /build
 
 RUN set -ex && python3 -m pip install --no-cache-dir \
-        'poetry>=2.0.0' \
-        'poetry-plugin-export>=1.9' \
+        'poetry>=2.0,<3.0' \
+        'poetry-plugin-export>=1.8,<2.0' \
     && poetry --version
 
 ENV POETRY_CACHE_DIR=/tmp/poetry \
@@ -16,7 +16,7 @@ ENV POETRY_CACHE_DIR=/tmp/poetry \
 
 COPY poetry.lock pyproject.toml /build/
 
-RUN poetry export --extras cuda > requirements.txt && rm --recursive --force -- "${POETRY_CACHE_DIR}"
+RUN poetry export --without-hashes --extras cuda > requirements.txt && rm --recursive --force -- "${POETRY_CACHE_DIR}"
 
 # Step -- 2.
 FROM nvidia/cuda:12.6.3-cudnn-devel-ubuntu22.04 AS runtime
