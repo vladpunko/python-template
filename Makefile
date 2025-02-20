@@ -34,7 +34,7 @@ build: bootstrap
 	@poetry build --clean
 
 upload: build
-	@poetry run twine upload --non-interactive dist/*
+	@poetry run twine upload --non-interactive --skip-existing dist/*
 
 .PHONY: container
 container:
