@@ -68,6 +68,7 @@ optional = true
 bandit = "^1.8"
 black = "^25.1"
 deptry = "^0.23"
+flake8 = "^7.1"
 isort = "^6.0"
 jupyter = "^1.1"
 mypy = "^1.14"
@@ -168,6 +169,7 @@ extend_exclude = [
   "^examples/",
   "^tests/",
 ]
+known_first_party = []
 
 [tool.isort]
 profile = "black"
