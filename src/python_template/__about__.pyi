@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright 2025 (c) Vladislav Punko <iam.vlad.punko@gmail.com>
+# Created by: Vladislav Punko <iam.vlad.punko@gmail.com>
+# Created date: 2025-02-04
 
 __version__: str
