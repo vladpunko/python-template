@@ -4,7 +4,11 @@ on:
   push:
     branches:
       - "master"
+  pull_request:
   workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   hooks:
@@ -12,15 +16,28 @@ jobs:
 
     steps:
       - name: Step -- 1.
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Step -- 2.
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        id: python
         with:
-          python-version: "3.x"
+          python-version: "3.14"
 
       - name: Step -- 3.
-        run: pip3 install --upgrade pip && pip3 install --no-cache-dir --upgrade 'poetry>=2.0.0'
+        run: python -m pip install 'poetry==2.5.1' 'poetry-plugin-export==1.10.1'
 
       - name: Step -- 4.
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            ~/.cache/pypoetry
+            ~/.cache/pre-commit
+            .venv
+          key: quality-${{ runner.os }}-${{ steps.python.outputs.python-version }}-${{ hashFiles('poetry.lock', '.githooks.yml') }}
+
+      - name: Step -- 5.
         run: make lint
+
+      - name: Step -- 6.
+        run: make docs
