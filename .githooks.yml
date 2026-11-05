@@ -4,7 +4,7 @@ default_stages: [pre-commit]
 repos:
   # Set the list of basic git hooks to find and fix common problems in the current working tree.
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: cef0300fd0fc4d2a87a85fa2093c6b283ea36f4b
+    rev: 3e8a8703264a2f4a69428a0aa4dcb512790b2c8c  # v6.0.0
     hooks:
       - id: check-added-large-files
       - id: check-executables-have-shebangs
@@ -16,43 +16,45 @@ repos:
 
   # Apply the code formatting tool to maintain a consistent style across the code base.
   - repo: https://github.com/psf/black
-    rev: 8a737e727ac5ab2f1d4cf5876720ed276dc8dc4b
+    rev: 258e7dbf348bc23cb70b8cdf693481c04634ebcc  # 26.10.1
     hooks:
       - id: black
 
   - repo: https://github.com/pycqa/isort
-    rev: 0a0b7a830386ba6a31c2ec8316849ae4d1b8240d
+    rev: 9f905615631c545f5aea2516508109350d1d2f7d  # 9.0.2
     hooks:
       - id: isort
 
   - repo: https://github.com/pycqa/bandit
-    rev: c2c336d1273b06fb667a31d4ecb83de7ea23a6cb
+    rev: 92ae8b82fb422a639f0ed8d99e96cea769594e08  # 1.9.4
     hooks:
       - id: bandit
         additional_dependencies: ["bandit[toml]"]
         args: ["-c", "pyproject.toml"]
 
   - repo: https://github.com/pycqa/flake8
-    rev: cf1542cefa3e766670b2066dd75c4571d682a649
+    rev: 960c1d286190804104f7255b97da034446fdaac3  # 7.5.0
     hooks:
       - id: flake8
 
   # Use the static code checker to find and fix logical errors in python source code.
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: 871f3bcae4fe473cd7109c3a068db975dc035e3b
+    rev: c0f278f1254ccc8fb09676bcdb8d847e7db493e5  # v0.17.4
     hooks:
-      - id: ruff
+      - id: ruff-check
 
   # The static type checker can be used to identify and locate errors in a program prior to its execution.
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: bbc3dc1f890007061f18f17e2334f216ea9e5df7
+    rev: ad26ebfa797fcb9b8f83275937c1c1d6e126719c  # v2.4.1
     hooks:
       - id: mypy
-        additional_dependencies: ["pydantic>=2.10"]
-        files: ^(?!(docs|examples|tests)).*\.py$
+        additional_dependencies: ["loguru==0.7.3"]
+        args: [src]
+        pass_filenames: false
+        files: ^src/.*\.(py|pyi)$
 
   # Find orphaned dependencies in python source code to improve code quality and reduce bloat.
-  - repo: https://github.com/fpgmaas/deptry.git
-    rev: 1edeef3edff88e1d9b03e6a6e1caeb017c0f3ef9
+  - repo: https://github.com/osprey-oss/deptry
+    rev: 0c39226d761685125c5ff71ca81282d6751c9540  # 0.25.1
     hooks:
       - id: deptry

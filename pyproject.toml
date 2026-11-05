@@ -1,17 +1,18 @@
 [build-system]
-requires = ["poetry-core>=2.0,<3.0"]
+requires = ["poetry-core>=2.5,<3.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.requires-plugins]
-poetry-plugin-export = ">=1.8,<2.0"
+poetry-plugin-export = ">=1.10,<2.0"
 
 [project]
 name = "python_template"
 version = "0.0.0"
 description = "python_template"
-license = {text = "MIT"}
+license = "MIT"
+license-files = ["LICENSE"]
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.13"
 authors = [
   {name = "Vladislav Punko", email = "iam.vlad.punko@gmail.com"},
 ]
@@ -20,16 +21,21 @@ classifiers = []  # see information: https://pypi.org/classifiers
 keywords = []
 dependencies = [  # see information: https://python-poetry.org/docs/dependency-specification
   "loguru (>=0.7,<1.0)",
-  "numpy (>=2.2,<3.0)",
 ]
 
 [project.optional-dependencies]
 cpu = [
-  "torch (>=2.6,<2.7) ; sys_platform == 'darwin'",
-  "torch (>=2.6+cpu,<2.7+cpu) ; sys_platform == 'linux'",
+  "numpy (>=2.5.4,<3.0)",
+  "torch (==2.15.0) ; sys_platform == 'darwin'",
+  "torch (==2.15.0+cpu) ; sys_platform == 'linux' or sys_platform == 'win32'",
 ]
 cuda = [
-  "torch (>=2.6+cu126,<2.7+cu126) ; sys_platform == 'linux'",
+  "numpy (>=2.5.4,<3.0)",
+  "torch (==2.15.0+cu134) ; sys_platform == 'linux'",
+  # Align shared libraries with the selected PyTorch and CUDA toolkit builds.
+  "nvidia-cublas (==13.8.1.7) ; sys_platform == 'linux'",
+  "nvidia-cuda-nvrtc (==13.4.59) ; sys_platform == 'linux'",
+  "nvidia-cusparse (==12.8.6.49) ; sys_platform == 'linux'",
 ]
 
 [project.urls]
@@ -37,6 +43,7 @@ cuda = [
 "Source code" = "https://github.com/vladpunko/python-template"
 
 [tool.poetry]
+requires-poetry = ">=2.5,<3.0"
 package-mode = true
 packages = [
   {include = "python_template", from = "src"},
@@ -44,50 +51,60 @@ packages = [
 include = ["CHANGELOG.md", "LICENSE", "README.md"]
 
 [tool.poetry.dependencies]
-python = ">=3.10,<3.13"
+python = ">=3.13,<4.0"
 # ---
 torch = [
-  {markers = "extra == 'cpu' and extra != 'cuda'", platform = "linux", source = "pytorch_cpu"},
-  {markers = "extra == 'cuda' and extra != 'cpu'", platform = "linux", source = "pytorch_cuda"},
+  {markers = "extra == 'cpu' and extra != 'cuda' and (sys_platform == 'linux' or sys_platform == 'win32')", source = "pytorch_cpu"},
+  {markers = "extra == 'cuda' and extra != 'cpu' and sys_platform == 'linux'", source = "pytorch_cuda"},
   # ---
-  {platform = "darwin", source = "pypi_public"},
+  {markers = "extra == 'cpu' and extra != 'cuda' and sys_platform == 'darwin'", source = "pypi_public"},
 ]
 
 [tool.poetry.group.docs]
 optional = true
 
 [tool.poetry.group.docs.dependencies]
-numpydoc = "^1.8"
-sphinx = "^8.1"
-sphinx_rtd_theme = "^3.0"
+numpydoc = "^1.11"
+sphinx = "^9.2"
+sphinx_rtd_theme = "^3.1"
 
 [tool.poetry.group.dev]
 optional = true
 
 [tool.poetry.group.dev.dependencies]
-bandit = "^1.8"
-black = "^25.1"
-deptry = "^0.23"
-flake8 = "^7.1"
-isort = "^6.0"
-jupyter = "^1.1"
-mypy = "^1.14"
-pre-commit = "^4.1"
-ruff = "^0.9"
-twine = "^6.1"
+bandit = "^1.9.4"
+black = "^26.10.1"
+deptry = "^0.25.1"
+flake8 = "^7.5"
+isort = "^9.0.2"
+mypy = "^2.4.1"
+pre-commit = "^4.7"
+ruff = "^0.17.4"
+tox = "^4.67.11"
+twine = "^7.0"
 
 [tool.poetry.group.tests]
 optional = true
 
 [tool.poetry.group.tests.dependencies]
-coverage = "^7.6"
-pyfakefs = "^5.7"
-pytest = "^8.3"
-pytest-cov = "^6.0"
-pytest-html = "^4.1"
-pytest-mock = "^3.14"
+coverage = "^7.17.2"
+pyfakefs = "^6.3.2"
+pytest = "^9.2"
+pytest-cov = "^7.1"
+pytest-html = "^4.2"
+pytest-mock = "^3.17"
+
+[tool.poetry.group.notebooks]
+optional = true
+
+[tool.poetry.group.notebooks.dependencies]
+jupyter = "^1.1"
+
+[tool.poetry.group.profiling]
+optional = true
+
+[tool.poetry.group.profiling.dependencies]
 snakeviz = "^2.2"
-tox = "^4.24"
 
 [[tool.poetry.source]]
 name = "pypi_public"
@@ -102,7 +119,7 @@ url = "https://download.pytorch.org/whl/cpu"
 [[tool.poetry.source]]
 name = "pytorch_cuda"
 priority = "explicit"
-url = "https://download.pytorch.org/whl/cu126"
+url = "https://download.pytorch.org/whl/cu134"
 
 [tool.pytest.ini_options]
 addopts = [
@@ -155,7 +172,7 @@ exclude_lines = [
 show_missing = true
 
 [tool.black]
-target-version = ["py310", "py311", "py312"]
+target-version = ["py313"]
 
 [tool.bandit]
 exclude_dirs = [
@@ -171,30 +188,27 @@ extend_exclude = [
 ]
 known_first_party = []
 
+[tool.deptry.per_rule_ignores]
+# Optional ML libraries support the example notebook, not the core API.
+DEP002 = ["numpy", "torch", "nvidia-cublas", "nvidia-cuda-nvrtc", "nvidia-cusparse"]
+
 [tool.isort]
 profile = "black"
 known_first_party = []
 known_local_folder = ["python_template"]
 
 [tool.mypy]
-disallow_untyped_defs = true
-exclude = [
-  ".pyi$",
-  "^docs/",
-  "^examples/",
-  "^tests/",
-]
-ignore_missing_imports = true
-plugins = "pydantic.mypy"
-strict_optional = true
+python_version = "3.13"
+files = ["src"]
+exclude = ["\\.pyi$"]
+strict = true
 
 [tool.ruff]
-exclude = [
-  "*.pyi",
-  "docs/",
-  "tests/",
-]
 line-length = 88
+target-version = "py313"
+extend-exclude = ["*.pyi", "docs/", "tests/"]
+
+[tool.ruff.lint]
 select = ["A", "B", "C", "E", "F", "N", "W"]
 
 [tool.ruff.lint.pydocstyle]
