@@ -13,9 +13,16 @@ from python_template import api
 @pytest.mark.parametrize(
     "sequence",
     [
+        (),
         (1, 2, 3),
         (4, 5, 6),
         (7, 8, 9),
+        (-3, -2, -1),
+        (2**31 - 1, 1),
+        (-2**31, -1),
+        (2**32,),
+        (2**63, 1),
+        (2**100, 1, -2**100),
     ],
 )
 def test_reduce(caplog, sequence):
@@ -25,6 +32,10 @@ def test_reduce(caplog, sequence):
     assert f"{{'sequence': {sequence!s}}}" in caplog.text
 
 
+def test_reduce_accepts_single_pass_iterables():
+    assert api.reduce(value for value in range(5)) == 10
+
+
 def test_reduce_check_sequence_is_not_iterable():
     with pytest.raises(TypeError) as error:
         api.reduce(None)
@@ -32,8 +43,9 @@ def test_reduce_check_sequence_is_not_iterable():
     assert str(error.value) == "The input must be an iterable containing only integers."
 
 
-def test_reduce_check_sequence_has_not_integer():
+@pytest.mark.parametrize("sequence", ["test", [1, 2.5], [1, None]])
+def test_reduce_check_sequence_has_not_integer(sequence):
     with pytest.raises(ValueError) as error:
-        api.reduce("test")
+        api.reduce(sequence)
 
     assert str(error.value) == "All elements in the sequence must be integers."
