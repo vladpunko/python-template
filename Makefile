@@ -1,8 +1,13 @@
-.DEFAULT: help
+.DEFAULT_GOAL := help
 
-CONTAINER_NAME = python_template_container
-.ONESHELL:
+POETRY ?= poetry
+export POETRY
+CONTAINER_NAME ?= python_template_container
 CONTAINER_VERSION ?= $(shell git rev-parse HEAD)
+PROFILE_SCRIPT ?= main.py
+TOX_ENV ?=
+
+.PHONY: help lock bootstrap build upload container devcontainer hooks tests test-all docs lint stubs jupyter analysis clean
 
 .PHONY: help
 help:
@@ -15,56 +20,71 @@ help:
 	@echo 'devcontainer - run isolated environment inside the docker container'
 	@echo 'hooks        - install all git hooks'
 	@echo 'tests        - run project tests'
+	@echo 'test-all     - run the tox Python matrix, optionally with TOX_ENV=py314'
 	@echo 'docs         - generate the project documentation'
 	@echo 'lint         - inspect project source code for problems and errors'
 	@echo 'stubs        - create files that include only type hints for the public interface of modules'
 	@echo 'jupyter      - run jupyter server'
 	@echo 'analysis     - run the python script with performance analysis'
-	@echo 'clean        - clean up project environment and all the build artifacts'
+	@echo 'clean        - remove generated reports and build artifacts'
 
 .PHONY: lock
 lock:
-	@poetry lock --no-cache
+	@$(POETRY) lock
 
 bootstrap: poetry.lock poetry.toml pyproject.toml
-	@poetry check
-	@poetry install -vv --compile --extras cpu --no-cache --with dev --with docs --with tests
+	@$(POETRY) check --strict --lock
+	@$(POETRY) install --only main,dev,tests --no-interaction
 
-build: bootstrap
-	@poetry build --clean
+build:
+	@$(POETRY) check --strict --lock
+	@$(POETRY) build --clean
 
 upload: build
-	@poetry run twine upload --non-interactive --skip-existing dist/*
+	@$(POETRY) install --only main,dev --no-interaction
+	@$(POETRY) run twine check --strict dist/*
+	@$(POETRY) run twine upload --non-interactive --skip-existing dist/*
 
 .PHONY: container
 container:
-	@env DOCKER_BUILDKIT=1 docker build --network host --tag $(CONTAINER_NAME):$(CONTAINER_VERSION) $(PWD)
+	@docker build --tag $(CONTAINER_NAME):$(CONTAINER_VERSION) "$(CURDIR)"
 
 devcontainer: container
-	@docker run --interactive --network host --rm --tty --volume $(PWD):/src:Z $(CONTAINER_NAME):$(CONTAINER_VERSION)
+	@docker run --interactive --rm --tty --gpus all --volume "$(CURDIR):/app" $(CONTAINER_NAME):$(CONTAINER_VERSION)
 
-hooks: bootstrap
-	@poetry run pre-commit install --config .githooks.yml
+hooks:
+	@$(POETRY) install --only main,dev --no-interaction
+	@$(POETRY) run pre-commit install --config .githooks.yml
 
-tests: bootstrap
-	@poetry run tox
+tests:
+	@$(POETRY) install --only main,tests --no-interaction
+	@$(POETRY) run pytest
 
-docs: bootstrap
-	@poetry run tox -e docs
+test-all:
+	@$(POETRY) install --only main,dev --no-interaction
+	@$(POETRY) run tox $(if $(TOX_ENV),-e "$(TOX_ENV)")
 
-lint: bootstrap
-	@poetry run tox -e lint
+docs:
+	@$(POETRY) install --only main,docs --no-interaction
+	@$(POETRY) run sphinx-build -E -W --builder=html docs docs/_build/html
 
-stubs: bootstrap
-	@poetry run stubgen --output .stubs -- src
+lint:
+	@$(POETRY) install --only main,dev --no-interaction
+	@$(POETRY) run pre-commit run --all-files --show-diff-on-failure --config .githooks.yml
 
-jupyter: bootstrap
-	@poetry run jupyter notebook --log-level INFO --ServerApp.notebook_dir $(PWD)
+stubs:
+	@$(POETRY) install --only main,dev --no-interaction
+	@$(POETRY) run stubgen --output .stubs -- src
 
-analysis: bootstrap
-	@poetry run python -m cProfile -o analysis.prof $(or $(PROFILE_SCRIPT), main.py)
-	@poetry run snakeviz analysis.prof
+jupyter:
+	@$(POETRY) install --only main,notebooks --extras cpu --no-interaction
+	@$(POETRY) run jupyter notebook --log-level INFO --ServerApp.notebook_dir "$(CURDIR)"
+
+analysis:
+	@$(POETRY) install --only main,profiling --no-interaction
+	@$(POETRY) run python -m cProfile -o analysis.prof "$(PROFILE_SCRIPT)"
+	@$(POETRY) run snakeviz analysis.prof
 
 .PHONY: clean
 clean:
-	git clean -X -d --force
+	rm -rf -- .coverage .coverage.* .mypy_cache .pytest_cache .pytest_report .ruff_cache .stubs .tox build dist docs/_build htmlcov analysis.prof
